@@ -8,7 +8,22 @@ import {
   CRITICAL_ABILITIES,
   CRITICAL_MOVES,
 } from './constants';
-import { typeMatchups } from '../pokemon-data/pokemon-data';
+// import { typeMatchups } from '../pokemon-data/pokemon-data';
+
+export function getStat(
+  name: string,
+  level: number,
+  iv: number,
+  ev: number,
+  base: number,
+  nature: number
+): number {
+  if (name === 'hp') {
+    return Math.floor(0.01 * (2 * base + iv + Math.floor(0.25 * ev)) * level) + level + 10;
+  } else {
+    return (Math.floor(0.01 * (2 * base + iv + Math.floor(0.25 * ev)) * level) + 5) * nature;
+  }
+}
 
 function getParenthesisFormula(input: DamageInfoInput): number {
   const { level, movePower, attack } = input.attacker;
@@ -73,16 +88,16 @@ function getStabNumber(input: DamageInfoInput): number {
   return 1;
 }
 
-function getTypeNumber(input: DamageInfoInput): number {
-  const { moveType } = input.attacker;
-  const { pokemonType } = input.defender;
-  let typeNumber: number = 1;
-  pokemonType.forEach((type) => {
-    typeNumber *= typeMatchups[moveType][type];
-  });
+// function getTypeNumber(input: DamageInfoInput): number {
+//   const { moveType } = input.attacker;
+//   const { pokemonType } = input.defender;
+//   let typeNumber: number = 1;
+//   pokemonType.forEach((type) => {
+//     typeNumber *= typeMatchups[moveType][type];
+//   });
 
-  return typeNumber;
-}
+//   return typeNumber;
+// }
 
 function getBurnNumber(input: DamageInfoInput): number {
   const { burn, ability, wasPhysical, moveName } = input.attacker;
@@ -97,7 +112,7 @@ export function getDamageRange(input: DamageInfoInput): DamageInfoOutput | undef
   const weather = getWeatherNumber(input);
   const crit = getCriticalNumber(input);
   const stab = getStabNumber(input);
-  const type = getTypeNumber(input);
+  // const type = getTypeNumber(input);
 
   return undefined;
 }
