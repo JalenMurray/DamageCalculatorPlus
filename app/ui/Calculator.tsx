@@ -10,17 +10,6 @@ export default function Calculator({ allPokemon }: { allPokemon: Pokemon[] }) {
   const [loading, setLoading] = useState(false);
   const pokemonPerPage = 10;
 
-  useEffect(() => {
-    fetchPokemon(page);
-  }, [page]);
-
-  function fetchPokemon(page: number) {
-    setLoading(true);
-    const newPokemon = allPokemon.slice((page - 1) * pokemonPerPage, page * pokemonPerPage);
-    setPokemon((prevPokemon) => [...prevPokemon, ...newPokemon]);
-    setLoading(false);
-  }
-
   return (
     <div className="flex flex-wrap gap-2">
       {/* You */}
