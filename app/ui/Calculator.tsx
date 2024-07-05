@@ -11,7 +11,7 @@ export default function Calculator({ allPokemon }: { allPokemon: Pokemon[] }) {
   const pokemonPerPage = 10;
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2 text-base-content">
       {/* You */}
       <div className="min-w-[320px]">You</div>
       <div>Vs.</div>
