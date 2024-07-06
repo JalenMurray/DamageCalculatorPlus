@@ -5,7 +5,6 @@ import { Move, Pokemon, Trainer } from '../pokemon-data/definitions';
 import Enemy from './Enemy';
 import { getDamageRange, getStat } from '../utils/formulas';
 import { AttackerInput, DefenderInput } from '../utils/definitions';
-import { createStatInput } from '../utils/utils';
 import EnemyTrainer from './EnemyTrainer';
 import UserTrainer from './UserTrainer';
 import { trainers } from '../pokemon-data/schema';

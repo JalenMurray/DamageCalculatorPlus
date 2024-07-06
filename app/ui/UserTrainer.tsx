@@ -47,6 +47,7 @@ function TrainerPokemonSelector({
             { 'bg-primary': i === selectedPokemon }
           )}
           onClick={() => handleSelect(i)}
+          key={bp.pokemon.id}
         >
           <Image
             src={getSpriteURL(bp.pokemon.name)}

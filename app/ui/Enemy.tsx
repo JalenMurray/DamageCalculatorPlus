@@ -48,7 +48,7 @@ export default function Enemy({ pokemon }: { pokemon: Pokemon }) {
       <div className="flex flex-col gap-4">
         {Object.values(pokemon.stats).map(({ name, value }) => (
           <h1 className="pl-4" key={name}>
-            {name}: {getStat(name, parseInt(level) || 1, 31, 0, value, 1)}
+            {name}: {getStat(name === 'HP', parseInt(level) || 1, 31, 0, value, 1)}
           </h1>
         ))}
       </div>

@@ -71,7 +71,10 @@ function Stats({ pokemon }: { pokemon: BPType }) {
       <hr />
       <div className="grid grid-cols-3 h-full w-full gap-3">
         {stats.map((stat) => (
-          <label className="input input-bordered bg-neutral-content flex items-center gap-1 text-neutral">
+          <label
+            className="input input-bordered bg-neutral-content flex items-center gap-1 text-neutral"
+            key={stat.name}
+          >
             <p className="text-sm">{stat.name}:</p>
             <p className="text-sm">
               {stat.floor} - {stat.ceiling}
