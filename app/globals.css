@@ -18,16 +18,29 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
+  background: linear-gradient(to bottom, transparent, rgb(var(--background-end-rgb)))
     rgb(var(--background-start-rgb));
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+@layer base {
+  .crop-bottom {
+    position: absolute;
+    top: -30px;
+    right: -20px;
+    width: 200px;
+    height: 125px; /* 75% of the image height */
+    overflow: hidden;
+  }
+
+  .crop-bottom img {
+    width: 100%;
+    height: auto;
+    display: block;
   }
 }

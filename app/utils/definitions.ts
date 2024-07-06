@@ -1,41 +1,28 @@
-export type PokemonType =
-  | 'normal'
-  | 'fire'
-  | 'water'
-  | 'electric'
-  | 'grass'
-  | 'ice'
-  | 'fighting'
-  | 'poison'
-  | 'ground'
-  | 'flying'
-  | 'psychic'
-  | 'bug'
-  | 'rock'
-  | 'ghost'
-  | 'dragon'
-  | 'dark'
-  | 'steel'
-  | 'fairy';
+import { Move, Pokemon } from '../pokemon-data/definitions';
+
+export type Stats = {
+  hp: number;
+  attack: number;
+  defense: number;
+  specialAttack: number;
+  specialDefense: number;
+  speed: number;
+};
 
 export type AttackerInput = {
+  pokemon: Pokemon;
+  move: Move;
+  stats: Stats;
   level: number; // Level of the attacking pokemon
-  attack: number; // Attack or Special Attack of the attacking pokemon
   ability: string; // Ability of the pokemon
-  pokemonType: PokemonType[]; // Pokemon Types
-  moveType: PokemonType; // Used move type
-  moveName: string; // Name of the move used
-  movePower: number; // Used move power
-  wasPhysical: boolean; // Whether or not the move was physical
   burn?: boolean; // Whether or not the attacker is burnt
 };
 
 export type DefenderInput = {
+  pokemon: Pokemon;
+  stats: Stats;
   level: number;
-  defense: number;
-  hp: number;
   ability: string;
-  pokemonType: PokemonType[];
 };
 
 export type DamageInfoInput = {

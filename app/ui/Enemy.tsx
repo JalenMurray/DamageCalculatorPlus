@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pokemon } from '../pokemon-data/queries';
+import { Pokemon } from '../pokemon-data/definitions';
 import { capitalize } from '../utils/utils';
 import TypeCard from './TypeCard';
 import { getStat } from '../utils/formulas';

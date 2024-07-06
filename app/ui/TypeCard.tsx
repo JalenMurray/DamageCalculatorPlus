@@ -1,4 +1,5 @@
-import { Type } from '../pokemon-data/queries';
+import { Type } from '../pokemon-data/definitions';
+import { capitalize } from '../utils/utils';
 
 export default function TypeCard({ type }: { type: Type }) {
   return (
@@ -6,7 +7,7 @@ export default function TypeCard({ type }: { type: Type }) {
       className="card text-white px-4 py-2 border-2 border-black "
       style={{ backgroundColor: type.color }}
     >
-      {type.name}
+      {capitalize(type.name)}
     </div>
   );
 }
