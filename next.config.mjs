@@ -7,6 +7,11 @@ const nextConfig = {
         hostname: 'play.pokemonshowdown.com',
         port: '',
       },
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+        port: '',
+      },
     ],
   },
 };

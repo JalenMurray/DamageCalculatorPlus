@@ -1,4 +1,14 @@
-import { Move, Pokemon, Trainer, PokemonType } from './definitions';
+import {
+  Move,
+  Pokemon,
+  Trainer,
+  PokemonType,
+  PokemonGame,
+  HeldItem,
+  TrainerSprite,
+  BattlePokemon,
+  Nature,
+} from './definitions';
 import { db } from './pokemon-data';
 
 function getFormattedPokemon(pokemon: any): Pokemon {
@@ -62,6 +72,21 @@ export async function getAllMoves(): Promise<Move[]> {
   return result.map((move) => ({ ...move, type: move.type as PokemonType }));
 }
 
+export async function getAllGames(): Promise<PokemonGame[]> {
+  const result = await db.query.pokemonGames.findMany();
+  return result;
+}
+
+export async function getAllHeldItems(): Promise<HeldItem[]> {
+  const result = await db.query.heldItems.findMany();
+  return result;
+}
+
+export async function getAllTrainerSprites(): Promise<TrainerSprite[]> {
+  const result = await db.query.trainerSprites.findMany();
+  return result;
+}
+
 export async function getTrainers(): Promise<Trainer[]> {
   const result = await db.query.trainers.findMany({
     with: {
@@ -90,6 +115,7 @@ export async function getTrainers(): Promise<Trainer[]> {
             columns: { name: true },
           },
           heldItem: true,
+          nature: true,
         },
       },
       pokemonGame: true,
@@ -99,19 +125,24 @@ export async function getTrainers(): Promise<Trainer[]> {
   const formattedTrainers = result.map((trainer) => {
     const { id, name, sprite, pokemonGame, battlePokemon, cardColor } = trainer;
     const trainerInfo = { id, name, sprite, pokemonGame, cardColor };
-    const battlePokemonInfo = battlePokemon.map((bp) => {
-      const { id, level, pokemon, ability, heldItem, moves } = bp;
-      const pokemonInfo = { id, level, pokemon, ability: ability.name, heldItem };
+    const battlePokemonInfo = battlePokemon.map((bp: any) => {
+      const { id, level, pokemon, ability, heldItem, moves, ivs, evs, nature } = bp;
+      const pokemonInfo = { id, level, pokemon, ability: ability.name, heldItem, ivs, evs, nature };
       const formattedPokemon = getFormattedPokemon(pokemon);
-      const movesInfo = moves.map((move) => ({
+      const movesInfo = moves.map((move: any) => ({
         ...move.move,
         type: move.move.type as PokemonType,
       }));
-      return { ...pokemonInfo, pokemon: formattedPokemon, moves: movesInfo };
+      return { ...pokemonInfo, pokemon: formattedPokemon, moves: movesInfo } as BattlePokemon;
     });
 
     return { ...trainerInfo, pokemon: battlePokemonInfo } as Trainer;
   });
 
   return formattedTrainers;
+}
+
+export async function getAllNatures(): Promise<Nature[]> {
+  const result = await db.query.natures.findMany();
+  return result;
 }

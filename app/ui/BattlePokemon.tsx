@@ -52,16 +52,22 @@ function Stats({ pokemon }: { pokemon: BPType }) {
   const total = stats.reduce((acc, stat) => acc + (stat.ceiling + stat.floor) / 2, 0);
   const avg = Math.floor(0.01 * (2 * 100 + 31 + Math.floor(0.25 * 0)) * pokemon.level) + 5;
 
-  const getBarWidth = (value: number) => {
-    const calculatedWidth = (value / avg) * 100;
-    return `${Math.min(calculatedWidth, 80)}%`;
-  };
-
-  function getBarColor(value: number) {
-    if (value >= avg) {
-      return `rgb(${255 - ((value - avg) * 255) / (180 - avg)}, 255, 0)`;
-    } else {
-      return `rgb(255, ${(value * 255) / avg}, 0)`;
+  function getStatDisplayName(stat: any) {
+    switch (stat.name) {
+      case 'hp':
+        return 'HP';
+      case 'attack':
+        return 'Att';
+      case 'Defense':
+        return 'Def';
+      case 'specialAttack':
+        return 'Sp. Att';
+      case 'specialDefense':
+        return 'Sp. Def';
+      case 'speed':
+        return 'Speed';
+      default:
+        return 'Speed';
     }
   }
 
@@ -72,12 +78,12 @@ function Stats({ pokemon }: { pokemon: BPType }) {
       <div className="grid grid-cols-3 h-full w-full gap-3">
         {stats.map((stat) => (
           <label
-            className="input input-bordered bg-neutral-content flex items-center gap-1 text-neutral"
+            className="input input-bordered bg-neutral-content grid grid-cols-3 text-neutral pt-2"
             key={stat.name}
           >
-            <p className="text-sm">{stat.name}:</p>
-            <p className="text-sm">
-              {stat.floor} - {stat.ceiling}
+            <p className="text-sm text-center pt-1">{getStatDisplayName(stat)}:</p>
+            <p className="text-xl col-span-2">
+              {stat.name === 'hp' ? stat.avg : `${stat.floor} - ${stat.ceiling}`}
             </p>
           </label>
         ))}
@@ -161,6 +167,8 @@ export default function BattlePokemon({
   if (pokemon === null) {
     return <BattlePokemonSkeleton />;
   }
+
+  console.log(pokemon);
 
   return (
     <div

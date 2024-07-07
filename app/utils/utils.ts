@@ -29,7 +29,9 @@ export function getTypeGradient(
   backgroundBlendMode?: string;
 } {
   if (types.length === 1) {
-    return { backgroundImage: `linear-gradient(to right, black, ${types[0].color}` };
+    return {
+      backgroundImage: `linear-gradient(to right, black, ${types[0].color}`,
+    };
   } else {
     const blackGradient =
       displayType === 'modal'

@@ -84,6 +84,9 @@ export const battlePokemon = pgTable('Battle Pokemon', {
   ability: integer('ability').notNull(),
   trainer: integer('trainer').notNull(),
   heldItem: integer('held_item'),
+  ivs: integer('ivs').array().notNull(),
+  evs: integer('evs').array().notNull(),
+  nature: integer('nature').notNull(),
 });
 
 export const pokedexes = pgTable('Pokedexes', {
@@ -108,6 +111,19 @@ export const battlePokemonMoves = pgTable('Battle Pokemon Moves', {
   id: integer('id').primaryKey(),
   pokemon: integer('pokemon').notNull(),
   move: integer('move').notNull(),
+});
+
+export const trainerSprites = pgTable('Trainer Sprites', {
+  id: integer('id').notNull(),
+  name: text('name').notNull(),
+  url: text('url').notNull(),
+});
+
+export const natures = pgTable('Natures', {
+  id: integer('id').notNull(),
+  name: text('name').notNull(),
+  increases: text('increases'),
+  decreases: text('decreases'),
 });
 
 ///////////////////////////////////////////////////////
@@ -146,6 +162,14 @@ export const battlePokemonRelations = relations(battlePokemon, ({ one, many }) =
     references: [heldItems.id],
   }),
   moves: many(battlePokemonMoves),
+  nature: one(natures, {
+    fields: [battlePokemon.nature],
+    references: [natures.id],
+  }),
+}));
+
+export const natureRelations = relations(natures, ({ many }) => ({
+  pokemon: many(battlePokemon),
 }));
 
 export const moveRelations = relations(moves, ({ many }) => ({

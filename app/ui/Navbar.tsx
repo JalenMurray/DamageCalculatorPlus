@@ -10,6 +10,9 @@ export default function Navbar() {
           <Image src={Logo} alt="DamageDex Logo" width={50} height={50} />
           DamageDex
         </Link>
+        <Link href={'/trainer-builder'} className="btn btn-ghost text-xl h-16">
+          Trainer Builder
+        </Link>
       </div>
 
       <div className="flex-none">

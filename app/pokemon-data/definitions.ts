@@ -57,12 +57,20 @@ export type Move = {
 };
 
 export type PokemonGame = {
+  id: number;
   name: string;
 };
 
 export type HeldItem = {
+  id: number;
   name: string;
   sprite: string;
+};
+
+export type Nature = {
+  name: string;
+  increases?: string | null;
+  decreases?: string | null;
 };
 
 export type BattlePokemon = {
@@ -71,6 +79,9 @@ export type BattlePokemon = {
   heldItem: HeldItem;
   level: number;
   moves: Move[];
+  ivs: number[];
+  evs: number[];
+  nature: Nature;
 };
 
 export type Trainer = {
@@ -80,6 +91,12 @@ export type Trainer = {
   pokemonGame: PokemonGame;
   pokemon: BattlePokemon[];
   cardColor: string;
+};
+
+export type TrainerSprite = {
+  id: number;
+  name: string;
+  url: string;
 };
 
 export const typeColors = {
@@ -101,4 +118,12 @@ export const typeColors = {
   dark: '#775544',
   steel: '#AAAABB',
   fairy: '#EE99EE',
+};
+
+export type TrainerFormData = {
+  sprite: TrainerSprite;
+  name: string;
+  game: PokemonGame;
+  cardColor: string;
+  pokemon: BattlePokemon[];
 };
