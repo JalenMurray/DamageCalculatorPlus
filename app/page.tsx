@@ -1,8 +1,16 @@
 'use server';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
-import { getAllMoves, getAllPokemon, getTrainers } from './pokemon-data/queries';
+import {
+  getAllAbilities,
+  getAllHeldItems,
+  getAllMoves,
+  getAllNatures,
+  getAllPokemon,
+  getTrainers,
+} from './pokemon-data/queries';
 import Calculator from './ui/Calculator';
-import { capitalize } from './utils/utils';
+import { capitalize, sortByName } from './utils/utils';
+import { Abilities, HeldItem, Move, Nature } from './pokemon-data/definitions';
 
 export default async function Home() {
   const queryClient = new QueryClient();
@@ -25,8 +33,18 @@ export default async function Home() {
   const pokemon = await getAllPokemon();
   const moves = await getAllMoves();
   const trainers = await getTrainers();
+  const abilities = await getAllAbilities();
+  const items = await getAllHeldItems();
+  const natures = await getAllNatures();
 
-  const input = { pokemon, moves, trainers };
+  const input = {
+    pokemon,
+    moves: moves,
+    trainers,
+    abilities: sortByName(abilities) as Abilities,
+    items: sortByName(items) as HeldItem[],
+    natures: sortByName(natures) as Nature[],
+  };
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

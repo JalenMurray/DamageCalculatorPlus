@@ -44,6 +44,25 @@ export function getTypeGradient(
   }
 }
 
+export function getStatByIndex(index: number): string {
+  switch (index) {
+    case 0:
+      return 'HP';
+    case 1:
+      return 'Att';
+    case 2:
+      return 'Def';
+    case 3:
+      return 'Sp. Att';
+    case 4:
+      return 'Sp. Def';
+    case 5:
+      return 'Speed';
+    default:
+      return 'Invalid';
+  }
+}
+
 export function formatDashName(name: string): string {
   const noDashes = name.replace('-', ' ');
   const words = noDashes.split(' ');
@@ -101,4 +120,12 @@ export function getBattlePokemonStats(
   };
 
   return [hp, attack, defense, specialAttack, specialDefense, speed];
+}
+
+interface ObjWithName {
+  name: string;
+}
+
+export function sortByName(arr: ObjWithName[]) {
+  return arr.sort((a, b) => a.name.localeCompare(b.name));
 }

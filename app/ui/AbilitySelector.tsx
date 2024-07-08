@@ -1,71 +1,62 @@
 import { AddCircleOutline } from '@mui/icons-material';
-import { Move, typeColors } from '../pokemon-data/definitions';
+import { Abilities, Ability, Move, typeColors } from '../pokemon-data/definitions';
 import { capitalize, formatDashName, getTypeURL } from '../utils/utils';
 import Image from 'next/image';
 import { useDebouncedCallback } from 'use-debounce';
 import { useEffect, useRef, useState } from 'react';
 
-export default function BattlePokemonMovesSelector({
+export default function AbilitySelector({
   selected,
-  allMoves,
+  abilities,
   onSelect,
 }: {
-  selected?: Move[];
-  allMoves: Move[];
-  onSelect: (moves: Move[]) => void;
+  selected?: Ability;
+  abilities: Abilities;
+  onSelect: (ability: Ability) => void;
 }) {
-  function addMove(toAdd: Move) {
-    onSelect(selected ? [...selected, toAdd] : [toAdd]);
-  }
-
-  function removeMove(toRemove: Move) {
-    onSelect(selected ? selected.filter((move) => move.id !== toRemove.id) : []);
-  }
-
-  const [filteredMoves, setFilteredMoves] = useState<Move[]>([]);
+  const [filteredAbilities, setFilteredAbilities] = useState<Abilities>([]);
   const [search, setSearch] = useState<string>('');
   const searchRef = useRef<HTMLInputElement>(null);
 
   const filter = useDebouncedCallback((text: string) => {
     const filtered =
       text !== ''
-        ? allMoves.filter((move) => {
+        ? abilities.filter((ability) => {
             let result = false;
-            if (selected && selected.includes(move)) {
+            if (selected && selected.id === ability.id) {
               return false;
             }
-            if (move.name.includes(text)) {
-              result = true;
-            }
-            if (move.id === parseFloat(text)) {
+            if (ability.name.includes(text)) {
               result = true;
             }
             return result;
           })
         : [];
     const toDisplay = filtered.length > 20 ? filtered.slice(0, 20) : filtered;
-    setFilteredMoves(toDisplay);
+    setFilteredAbilities(toDisplay);
   }, 200);
 
   function handleKeyDown(e: any) {
     const { key } = e;
-    if (key === 'Enter' && filteredMoves[0]) {
-      addMove(filteredMoves[0]);
-      setSearch('');
-      filter('');
+    if (key === 'Enter' && filteredAbilities[0]) {
+      onSelect(filteredAbilities[0]);
+      if (searchRef.current) {
+        searchRef.current.blur();
+      }
     }
   }
 
   return (
     <div className="flex flex-col gap-4 my-4">
-      <h1>Select Moves</h1>
+      <h1>Select Ability</h1>
+      {selected && <h1>Selected Ability: {formatDashName(selected.name)}</h1>}
       <div className="flex flex-col">
         <label className="input input-bordered flex items-center gap-2">
           <input
             type="text"
             className="grow"
             value={search}
-            placeholder="Search Moves"
+            placeholder="Search Abilities"
             onChange={(e) => {
               setSearch(e.target.value);
               filter(e.target.value.toLowerCase().replace(' ', '-'));
@@ -74,7 +65,6 @@ export default function BattlePokemonMovesSelector({
               setSearch('');
               filter('');
             }}
-            disabled={selected && selected.length >= 4}
             onKeyDown={handleKeyDown}
             ref={searchRef}
           />
@@ -91,35 +81,20 @@ export default function BattlePokemonMovesSelector({
             />
           </svg>
         </label>
-        {filteredMoves.length > 0 && (
+        {filteredAbilities.length > 0 && (
           <ul className="mt-1 max-h-48 overflow-auto border-2 border-black">
-            {filteredMoves.map((move, index) => (
+            {filteredAbilities.map((ability) => (
               <li
-                key={index}
+                key={ability.id}
                 className="p-2 hover:bg-neutral-600 hover:text-neutral-content cursor-pointer"
-                onClick={() => addMove(move)}
+                onClick={() => onSelect(ability)}
               >
-                {formatDashName(move.name)}
+                {formatDashName(ability.name)}
               </li>
             ))}
           </ul>
         )}
       </div>
-      {selected && (
-        <>
-          <h1>Selected Moves: </h1>
-          <div className="grid grid-cols-2 gap-4 h-56">
-            {selected.map((move) => (
-              <div
-                className="card bg-neutral text-neutral-content h-24 text-center justify-center cursor-pointer"
-                onClick={() => removeMove(move)}
-              >
-                {formatDashName(move.name)}
-              </div>
-            ))}
-          </div>
-        </>
-      )}
     </div>
   );
 }

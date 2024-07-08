@@ -3,7 +3,7 @@ import { Pokemon } from '../pokemon-data/definitions';
 import { useDebouncedCallback } from 'use-debounce';
 import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { capitalize } from '../utils/utils';
+import { capitalize, formatDashName } from '../utils/utils';
 
 export default function PokemonSelector({
   allPokemon,
@@ -21,6 +21,7 @@ export default function PokemonSelector({
   const [pagePokemon, setPagePokemon] = useState<Array<Pokemon>>([]);
   const [pagesToDisplay, setPagesToDisplay] = useState<string[]>([]);
   const listRef = useRef<HTMLHeadingElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   const pokemonPerPage = 24;
 
@@ -114,14 +115,20 @@ export default function PokemonSelector({
         setCurrentPage(parseInt(buttonClicked, 10));
         break;
     }
+  }
 
-    if (listRef.current) {
-      setTimeout(() => {
-        (listRef.current as HTMLHeadingElement).scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
-      }, 50);
+  function handleClick(pokemon: Pokemon) {
+    onSelect(pokemon);
+    if (searchRef.current) {
+      searchRef.current.value = '';
+      filter('');
+    }
+  }
+
+  function handleKeyDown(e: any) {
+    const { key } = e;
+    if (key === 'Enter' && pagePokemon[0]) {
+      handleClick(pagePokemon[0]);
     }
   }
 
@@ -134,6 +141,8 @@ export default function PokemonSelector({
           className="grow"
           placeholder="Search Pokemon"
           onChange={(e) => filter(e.target.value.toLowerCase())}
+          onKeyDown={handleKeyDown}
+          ref={searchRef}
         />
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -161,7 +170,7 @@ export default function PokemonSelector({
                     !selected || selected.id !== pokemon.id,
                 }
               )}
-              onClick={() => onSelect(pokemon)}
+              onClick={() => handleClick(pokemon)}
             >
               <Image
                 src={`${baseSpriteURL}${pokemon.id}.png`}
@@ -169,7 +178,7 @@ export default function PokemonSelector({
                 width={50}
                 height={50}
               />
-              <h1>{pokemon.name}</h1>
+              <h1>{formatDashName(pokemon.name)}</h1>
             </div>
           ))}
         </div>

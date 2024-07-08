@@ -29,30 +29,13 @@ export function getStat(
 }
 
 function getParenthesisFormula(input: DamageInfoInput): number {
-  const { level, move } = input.attacker;
+  const { move, attack, level } = input.attacker;
+  const { defense } = input.defender;
   const { power, damageClass } = move;
-  const { attack: physicalA, specialAttack: specialA } = input.attacker.stats;
-  const { defense: physicalD, specialDefense: specialD } = input.defender.stats;
 
   // If the move is a status move or does not have a power, return 0
   if (!power || damageClass === 'status') {
     return 0;
-  }
-
-  // Set Attack According to Damage CLass
-  let attack: number;
-  if (damageClass === 'physical') {
-    attack = physicalA;
-  } else {
-    attack = specialA;
-  }
-
-  // Set Defense accorinding to Damage Class
-  let defense: number;
-  if (damageClass === 'physical') {
-    defense = physicalD;
-  } else {
-    defense = specialD;
   }
 
   const a = Math.floor((2 * level) / 5) + 2;
@@ -67,12 +50,12 @@ function getParenthesisFormula(input: DamageInfoInput): number {
 
 function getWeatherNumber(input: DamageInfoInput): number {
   const { weather } = input;
-  const { move, ability: a } = input.attacker;
+  const { move, ability: a1 } = input.attacker;
   const { ability: a2 } = input.defender;
   const { name, type } = move;
 
   // If either pokemon has Cloud Nine or Air Lock return 1
-  if (WEATHER_ABILITIES.includes(a) || WEATHER_ABILITIES.includes(a2)) {
+  if (WEATHER_ABILITIES.includes(a1) || WEATHER_ABILITIES.includes(a2)) {
     return 1;
   }
 
@@ -111,8 +94,7 @@ function getCriticalNumber(input: DamageInfoInput): number {
 }
 
 function getStabNumber(input: DamageInfoInput): number {
-  const { ability, move, pokemon } = input.attacker;
-  const { types: pokemonTypes } = pokemon;
+  const { ability, move, types: pokemonTypes } = input.attacker;
   const { type: moveType } = move;
 
   const pokemonTypeStrings = getTypeStrs(pokemonTypes);
@@ -128,7 +110,7 @@ function getStabNumber(input: DamageInfoInput): number {
 
 function getTypeNumber(input: DamageInfoInput): number {
   const { type: moveType } = input.attacker.move;
-  const { types: pokemonTypes } = input.defender.pokemon;
+  const { types: pokemonTypes } = input.defender;
 
   const pokemonTypeStrs = getTypeStrs(pokemonTypes);
 
@@ -171,7 +153,7 @@ export function getDamageRange(input: DamageInfoInput): DamageInfoOutput {
   // console.log('Max Dmg', maxDmg);
   // console.log('Min Dmg', minDmg);
 
-  const defenderHP = input.defender.stats.hp;
+  const defenderHP = input.defender.hp;
 
   const ceiling = (maxDmg / defenderHP) * 100;
 

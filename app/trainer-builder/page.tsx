@@ -1,4 +1,5 @@
 import {
+  getAllAbilities,
   getAllGames,
   getAllHeldItems,
   getAllMoves,
@@ -15,17 +16,19 @@ export default async function Page() {
   const heldItems = await getAllHeldItems();
   const trainerSprites = await getAllTrainerSprites();
   const natures = await getAllNatures();
+  const abilities = await getAllAbilities();
 
   return (
     <main className="bg-base-100 min-h-screen w-full p-4 xl:p-24">
-      <NewTrainerForm
+      {/* <NewTrainerForm
         pokemon={pokemon}
         moves={moves}
         games={games}
         heldItems={heldItems}
         trainerSprites={trainerSprites}
         natures={natures}
-      />
+        abilities={abilities}
+      /> */}
     </main>
   );
 }

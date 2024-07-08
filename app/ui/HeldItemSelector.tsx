@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { HeldItem } from '../pokemon-data/definitions';
 import { useDebouncedCallback } from 'use-debounce';
 import { formatDashName } from '../utils/utils';
@@ -15,6 +15,7 @@ export default function HeldItemSelector({
 }) {
   const [filteredItems, setFilteredItems] = useState<HeldItem[]>([]);
   const [search, setSearch] = useState<string>('');
+  const searchRef = useRef<HTMLInputElement>(null);
 
   const filter = useDebouncedCallback((text: string) => {
     const filtered =
@@ -37,6 +38,16 @@ export default function HeldItemSelector({
     setFilteredItems(toDisplay);
   }, 200);
 
+  function handleKeyDown(e: any) {
+    const { key } = e;
+    if (key === 'Enter' && filteredItems[0]) {
+      onSelect(filteredItems[0]);
+      if (searchRef.current) {
+        searchRef.current.blur();
+      }
+    }
+  }
+
   return (
     <div className="flex flex-col gap-4 mt-4">
       <h1>Select an Item</h1>
@@ -55,6 +66,8 @@ export default function HeldItemSelector({
               setSearch('');
               filter('');
             }}
+            onKeyDown={handleKeyDown}
+            ref={searchRef}
           />
           <svg
             xmlns="http://www.w3.org/2000/svg"

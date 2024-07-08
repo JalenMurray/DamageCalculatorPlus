@@ -2,13 +2,16 @@ import { integer, serial, text, pgTable, pgEnum } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 export const damageClasses = pgEnum('Damage Classes', ['physical', 'special', 'status']);
+export type NewBattlePokemon = typeof battlePokemon.$inferInsert;
+export type NewBattlePokemonMove = typeof battlePokemonMoves.$inferInsert;
+export type NewTrainer = typeof trainers.$inferInsert;
 
 ///////////////////////////////////////////////////////
 ///////////////       Tables          ////////////////
 /////////////////////////////////////////////////////
 
 export const pokemon = pgTable('Pokemon', {
-  id: integer('id').primaryKey(),
+  id: serial('id').primaryKey(),
   name: text('name').notNull(),
   hp: integer('hp').notNull(),
   attack: integer('attack').notNull(),
@@ -20,13 +23,13 @@ export const pokemon = pgTable('Pokemon', {
 });
 
 export const types = pgTable('Types', {
-  id: integer('id').primaryKey(),
+  id: serial('id').primaryKey(),
   name: text('name').notNull(),
   color: text('color').notNull(),
 });
 
 export const abilities = pgTable('Abilities', {
-  id: integer('id').primaryKey(),
+  id: serial('id').primaryKey(),
   name: text('name').notNull(),
 });
 
@@ -41,7 +44,7 @@ export const pokemonTypes = pgTable('Pokemon Types', {
 });
 
 export const moves = pgTable('Moves', {
-  id: integer('id').notNull(),
+  id: serial('id').notNull(),
   name: text('name').notNull(),
   power: integer('power'),
   accuracy: integer('accuracy'),
@@ -52,33 +55,33 @@ export const moves = pgTable('Moves', {
 });
 
 export const versionGroups = pgTable('Version Groups', {
-  id: integer('id').primaryKey(),
+  id: serial('id').primaryKey(),
   name: text('name').notNull(),
   generation: integer('generation').notNull(),
 });
 
 export const pokemonGames = pgTable('Pokemon Games', {
-  id: integer('id').primaryKey(),
+  id: serial('id').primaryKey(),
   name: text('name').notNull(),
   versionGroup: integer('version-group').notNull(),
 });
 
 export const heldItems = pgTable('Held Items', {
-  id: integer('id').primaryKey(),
+  id: serial('id').primaryKey(),
   name: text('name').notNull(),
   sprite: text('sprite').notNull(),
 });
 
 export const trainers = pgTable('Trainers', {
-  id: integer('id').primaryKey(),
+  id: serial('id').primaryKey(),
   name: text('name').notNull(),
-  sprite: text('sprite').notNull(),
+  sprite: integer('sprite').notNull(),
   pokemonGame: integer('pokemon_game').notNull(),
   cardColor: text('card_color').notNull(),
 });
 
 export const battlePokemon = pgTable('Battle Pokemon', {
-  id: integer('id').notNull(),
+  id: serial('id').notNull(),
   level: integer('level').notNull(),
   pokemon: integer('pokemon').notNull(),
   ability: integer('ability').notNull(),
@@ -90,37 +93,37 @@ export const battlePokemon = pgTable('Battle Pokemon', {
 });
 
 export const pokedexes = pgTable('Pokedexes', {
-  id: integer('id').primaryKey(),
+  id: serial('id').primaryKey(),
   name: text('name').notNull(),
 });
 
 export const pokedexVersionGroups = pgTable('Pokedex Version Groups', {
-  id: integer('id').primaryKey(),
+  id: serial('id').primaryKey(),
   pokedex: integer('pokedex').notNull(),
   versionGroup: integer('version_group').notNull(),
 });
 
 export const pokedexPokemon = pgTable('Pokedex Pokemon', {
-  id: integer('id').primaryKey(),
+  id: serial('id').primaryKey(),
   pokedex: integer('pokedex').notNull(),
   pokemon: integer('pokemon').notNull(),
   entryNum: integer('entry_num').notNull(),
 });
 
 export const battlePokemonMoves = pgTable('Battle Pokemon Moves', {
-  id: integer('id').primaryKey(),
+  id: serial('id').primaryKey(),
   pokemon: integer('pokemon').notNull(),
   move: integer('move').notNull(),
 });
 
 export const trainerSprites = pgTable('Trainer Sprites', {
-  id: integer('id').notNull(),
+  id: serial('id').notNull(),
   name: text('name').notNull(),
   url: text('url').notNull(),
 });
 
 export const natures = pgTable('Natures', {
-  id: integer('id').notNull(),
+  id: serial('id').notNull(),
   name: text('name').notNull(),
   increases: text('increases'),
   decreases: text('decreases'),
@@ -182,6 +185,14 @@ export const trainerRelations = relations(trainers, ({ one, many }) => ({
     references: [pokemonGames.id],
   }),
   battlePokemon: many(battlePokemon),
+  sprite: one(trainerSprites, {
+    fields: [trainers.sprite],
+    references: [trainerSprites.id],
+  }),
+}));
+
+export const trainerSpriteRelations = relations(trainerSprites, ({ many }) => ({
+  trainers: many(trainers),
 }));
 
 export const heldItemRelations = relations(heldItems, ({ many }) => ({

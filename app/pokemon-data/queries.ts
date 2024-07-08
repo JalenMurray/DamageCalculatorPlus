@@ -8,8 +8,11 @@ import {
   TrainerSprite,
   BattlePokemon,
   Nature,
+  Abilities,
+  TrainerFormData,
 } from './definitions';
 import { db } from './pokemon-data';
+import { battlePokemon, battlePokemonMoves, trainers } from './schema';
 
 function getFormattedPokemon(pokemon: any): Pokemon {
   const { id, name, hp, attack, defense, specialAttack, specialDefense, speed, weight } = pokemon;
@@ -119,6 +122,7 @@ export async function getTrainers(): Promise<Trainer[]> {
         },
       },
       pokemonGame: true,
+      sprite: true,
     },
   });
 
@@ -145,4 +149,45 @@ export async function getTrainers(): Promise<Trainer[]> {
 export async function getAllNatures(): Promise<Nature[]> {
   const result = await db.query.natures.findMany();
   return result;
+}
+
+export async function getAllAbilities(): Promise<Abilities> {
+  const result = await db.query.abilities.findMany();
+  return result;
+}
+
+export async function createTrainer(input: TrainerFormData) {
+  const { name, sprite, cardColor, game, pokemon, moves } = input;
+  const trainerInfo = {
+    name,
+    sprite: sprite.id,
+    cardColor,
+    pokemonGame: game.id,
+  };
+  const newTrainer = await db.insert(trainers).values(trainerInfo).returning();
+  const { id } = newTrainer[0];
+  const pokemonInfo = pokemon.map((p) => ({
+    pokemon: p.pokemon.id,
+    level: p.level,
+    evs: p.evs,
+    ivs: p.ivs,
+    ability: p.ability.id,
+    nature: p.nature.id,
+    trainer: id,
+    held_item: p.heldItem?.id || null,
+  }));
+  const newPokemon = await db.insert(battlePokemon).values(pokemonInfo).returning();
+  const moveInfo = newPokemon.map(({ id }, i) => {
+    const pokemonMoves = moves[i];
+    const toAdd = pokemonMoves.moves.map((move) => ({
+      pokemon: id,
+      move: move.id,
+    }));
+    return toAdd;
+  });
+  const addMoves = moveInfo.map(async (movesInfo) => {
+    await db.insert(battlePokemonMoves).values(movesInfo);
+  });
+
+  await Promise.all(addMoves);
 }

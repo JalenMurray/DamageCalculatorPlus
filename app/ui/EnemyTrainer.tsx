@@ -16,7 +16,12 @@ function TrainerHeader({ trainer }: { trainer: Trainer }) {
         <span className="text-lg ml-4 text-neutral-400">{trainer.pokemonGame.name}</span>
       </h1>
       <div className="crop-bottom">
-        <Image src={trainer.sprite} alt={trainer.name} width={200} height={200} />
+        <Image
+          src={`https://play.pokemonshowdown.com/sprites/trainers/${trainer.sprite.url}`}
+          alt={trainer.name}
+          width={200}
+          height={200}
+        />
       </div>
     </div>
   );

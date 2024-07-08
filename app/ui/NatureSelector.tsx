@@ -147,7 +147,6 @@ export default function NatureSelector({
   }
 
   function getNatureEffect(nature: Nature) {
-    console.log(nature);
     const inc = nature.increases ? getIncJSX(nature.increases) : <p>---</p>;
     const dec = nature.decreases ? getDecJSX(nature.decreases) : <p>---</p>;
     return (

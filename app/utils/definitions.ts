@@ -1,4 +1,4 @@
-import { Move, Pokemon } from '../pokemon-data/definitions';
+import { Move, Pokemon, Type } from '../pokemon-data/definitions';
 
 export type Stats = {
   hp: number;
@@ -10,19 +10,19 @@ export type Stats = {
 };
 
 export type AttackerInput = {
-  pokemon: Pokemon;
+  level: number;
+  types: Type[];
   move: Move;
-  stats: Stats;
-  level: number; // Level of the attacking pokemon
+  attack: number;
   ability: string; // Ability of the pokemon
   burn?: boolean; // Whether or not the attacker is burnt
 };
 
 export type DefenderInput = {
-  pokemon: Pokemon;
-  stats: Stats;
-  level: number;
+  hp: number;
+  defense: number;
   ability: string;
+  types: Type[];
 };
 
 export type DamageInfoInput = {

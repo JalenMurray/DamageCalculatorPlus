@@ -1,8 +1,15 @@
 'use client';
 
 import { createContext, useEffect, useState, useContext } from 'react';
-import { CalculatorContextType, MoveOutput } from './types';
-import { BattlePokemon, Move } from '../pokemon-data/definitions';
+import { CalculatorContextType, MinPokemonInfo, MoveOutput } from './types';
+import {
+  Abilities,
+  BattlePokemon,
+  HeldItem,
+  Move,
+  Nature,
+  Pokemon,
+} from '../pokemon-data/definitions';
 import {
   AttackerInput,
   DamageInfoInput,
@@ -12,23 +19,38 @@ import {
 } from '../utils/definitions';
 import { getBattlePokemonStats } from '../utils/utils';
 import { DEFAULT_EVS, DEFAULT_IVS } from '../utils/constants';
-import { getDamageRange } from '../utils/formulas';
+import { getDamageRange, getStat } from '../utils/formulas';
 
 export const CalculatorContext = createContext<CalculatorContextType>({
+  allPokemon: null,
+  allAbilities: null,
+  allHeldItems: null,
+  allMoves: null,
+  allNatures: null,
   userPokemon: null,
   userMoveOutputs: [],
   enemyPokemon: null,
   enemyMoveOutputs: [],
   conditions: null,
-  setUserPokemon: (newPokemon: BattlePokemon) => null,
-  setEnemyPokemon: (newPokemon: BattlePokemon) => null,
+  setUserPokemon: (newPokemon: MinPokemonInfo) => null,
+  setEnemyPokemon: (newPokemon: MinPokemonInfo) => null,
+  setAllPokemon: (pokemonList: Pokemon[]) => null,
+  setAllAbilities: (abilityList: Abilities) => null,
+  setAllHeldItems: (itemList: HeldItem[]) => null,
+  setAllMoves: (moveList: Move[]) => null,
+  setAllNatures: (natureList: Nature[]) => null,
 });
 
 export function CalculatorProvider({ children }: { children: React.ReactNode }) {
-  const [userPokemon, setUserPokemon] = useState<BattlePokemon | null>(null);
-  const [enemyPokemon, setEnemyPokemon] = useState<BattlePokemon | null>(null);
+  const [userPokemon, setUserPokemon] = useState<MinPokemonInfo | null>(null);
+  const [enemyPokemon, setEnemyPokemon] = useState<MinPokemonInfo | null>(null);
   const [userMoveOutputs, setUserMoveOutputs] = useState<MoveOutput[]>([]);
   const [enemyMoveOutputs, setEnemyMoveOutputs] = useState<MoveOutput[]>([]);
+  const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
+  const [allAbilities, setAllAbilities] = useState<Abilities>([]);
+  const [allHeldItems, setAllHeldItems] = useState<HeldItem[]>([]);
+  const [allMoves, setAllMoves] = useState<Move[]>([]);
+  const [allNatures, setAllNatures] = useState<Nature[]>([]);
 
   useEffect(() => {
     if (!userPokemon || !enemyPokemon) {
@@ -39,59 +61,112 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
     const { moves: enemyMoves } = enemyPokemon;
 
     // User is Attacker
+    // If Simple
     const uMoveOutputs = userMoves.map((move) => {
-      return { id: move.id, ...getDamageInfo(move, userPokemon, enemyPokemon) };
+      const attacker = getAttacker(move, userPokemon);
+      const defender = getDefender(move, enemyPokemon);
+      return { id: move.id, ...getDamageRange({ attacker, defender }) };
     });
+    setUserMoveOutputs(uMoveOutputs);
 
     // User is Defender
     const eMoveOutputs = enemyMoves.map((move) => {
-      return { id: move.id, ...getDamageInfo(move, enemyPokemon, userPokemon) };
+      const attacker = getAttacker(move, enemyPokemon);
+      const defender = getDefender(move, userPokemon);
+      return { id: move.id, ...getDamageRange({ attacker, defender }) };
     });
-
-    setUserMoveOutputs(uMoveOutputs);
     setEnemyMoveOutputs(eMoveOutputs);
   }, [userPokemon, enemyPokemon]);
 
-  function getDamageInfo(
-    move: Move,
-    offensePokemon: BattlePokemon,
-    defensePokemon: BattlePokemon
-  ): DamageInfoOutput {
-    const { pokemon: aPokemon, level: aLevel, ability: aAbility } = offensePokemon;
-    const attackerStats = getBattlePokemonStats(
-      offensePokemon,
-      DEFAULT_IVS,
-      [252, 252, 252, 252, 252, 252]
-    );
-    const { pokemon: dPokemon, level: dLevel, ability: dAbility } = defensePokemon;
-    const defenderStats = getBattlePokemonStats(defensePokemon, DEFAULT_IVS, DEFAULT_EVS);
-
-    const aStats = attackerStats.reduce((acc: any, stat) => {
-      acc[stat.name] = stat.avg;
-      return acc;
-    }, {}) as Stats;
-    const dStats = defenderStats.reduce((acc: any, stat) => {
-      acc[stat.name] = stat.avg;
-      return acc;
-    }, {}) as Stats;
-
-    const attacker: AttackerInput = {
-      pokemon: aPokemon,
-      level: aLevel,
-      ability: aAbility,
-      move,
-      stats: aStats,
+  function getAttacker(move: Move, pokemon: MinPokemonInfo): AttackerInput {
+    let attack: number;
+    if (pokemon.pokemon) {
+      switch (move.damageClass) {
+        case 'physical':
+          attack = getStat(
+            false,
+            pokemon.level,
+            (pokemon.ivs as number[])[1],
+            (pokemon.evs as number[])[1],
+            pokemon.pokemon.stats.attack.value,
+            pokemon.nature.id
+          );
+          break;
+        case 'special':
+          attack = getStat(
+            false,
+            pokemon.level,
+            (pokemon.ivs as number[])[3],
+            (pokemon.evs as number[])[3],
+            pokemon.pokemon.stats.specialAttack.value,
+            pokemon.nature.id
+          );
+          break;
+        default:
+          attack = 0;
+      }
+    } else {
+      const { attack: physical, specialAttack: special } = pokemon.stats as Stats;
+      attack =
+        move.damageClass === 'physical' ? physical : move.damageClass === 'special' ? special : 0;
+    }
+    return {
+      level: pokemon.level,
+      move: move,
+      attack,
+      ability: pokemon.ability.name,
+      types: [],
     };
+  }
 
-    const defender: DefenderInput = {
-      pokemon: dPokemon,
-      level: dLevel,
-      ability: dAbility,
-      stats: dStats,
+  function getDefender(move: Move, pokemon: MinPokemonInfo): DefenderInput {
+    let defense: number;
+    let hp: number;
+    if (pokemon.pokemon) {
+      hp = getStat(
+        true,
+        pokemon.level,
+        (pokemon.ivs as number[])[0],
+        (pokemon.evs as number[])[0],
+        pokemon.pokemon.stats.hp.value,
+        pokemon.nature.id
+      );
+      switch (move.damageClass) {
+        case 'physical':
+          defense = getStat(
+            false,
+            pokemon.level,
+            (pokemon.ivs as number[])[2],
+            (pokemon.evs as number[])[2],
+            pokemon.pokemon.stats.defense.value,
+            pokemon.nature.id
+          );
+          break;
+        case 'special':
+          defense = getStat(
+            false,
+            pokemon.level,
+            (pokemon.ivs as number[])[4],
+            (pokemon.evs as number[])[4],
+            pokemon.pokemon.stats.specialDefense.value,
+            pokemon.nature.id
+          );
+          break;
+        default:
+          defense = 0;
+      }
+    } else {
+      const { defense: physical, specialDefense: special, hp: pokemonHP } = pokemon.stats as Stats;
+      hp = pokemonHP;
+      defense =
+        move.damageClass === 'physical' ? physical : move.damageClass === 'special' ? special : 0;
+    }
+    return {
+      hp,
+      defense,
+      ability: pokemon.ability.name,
+      types: [],
     };
-
-    const output = getDamageRange({ attacker, defender });
-    return output;
   }
 
   const value = {
@@ -101,6 +176,16 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
     enemyPokemon,
     setEnemyPokemon,
     enemyMoveOutputs,
+    allPokemon,
+    allAbilities,
+    allHeldItems,
+    allMoves,
+    allNatures,
+    setAllPokemon,
+    setAllAbilities,
+    setAllHeldItems,
+    setAllMoves,
+    setAllNatures,
   };
   return <CalculatorContext.Provider value={value}>{children}</CalculatorContext.Provider>;
 }

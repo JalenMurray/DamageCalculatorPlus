@@ -29,7 +29,12 @@ export type Stats = {
   speed: { name: StatName; value: number };
 };
 
-export type Abilities = string[];
+export type Ability = {
+  id: number;
+  name: string;
+};
+
+export type Abilities = Ability[];
 
 export type Type = {
   name: PokemonType;
@@ -68,6 +73,7 @@ export type HeldItem = {
 };
 
 export type Nature = {
+  id: number;
   name: string;
   increases?: string | null;
   decreases?: string | null;
@@ -87,7 +93,7 @@ export type BattlePokemon = {
 export type Trainer = {
   id: number;
   name: string;
-  sprite: string;
+  sprite: TrainerSprite;
   pokemonGame: PokemonGame;
   pokemon: BattlePokemon[];
   cardColor: string;
@@ -120,10 +126,26 @@ export const typeColors = {
   fairy: '#EE99EE',
 };
 
+export type PokemonFormData = {
+  pokemon: Pokemon;
+  ability: Ability;
+  level: number;
+  evs: number[];
+  ivs: number[];
+  heldItem?: HeldItem | null;
+  nature: Nature;
+};
+
+export type BattlePokemonMoveFormData = {
+  moves: Move[];
+  pokemon: Pokemon;
+};
+
 export type TrainerFormData = {
   sprite: TrainerSprite;
   name: string;
   game: PokemonGame;
   cardColor: string;
-  pokemon: BattlePokemon[];
+  pokemon: PokemonFormData[];
+  moves: BattlePokemonMoveFormData[];
 };
