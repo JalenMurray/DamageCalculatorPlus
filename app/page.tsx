@@ -6,6 +6,7 @@ import {
   getAllMoves,
   getAllNatures,
   getAllPokemon,
+  getAllTypes,
   getTrainers,
 } from './pokemon-data/queries';
 import Calculator from './ui/Calculator';
@@ -36,14 +37,16 @@ export default async function Home() {
   const abilities = await getAllAbilities();
   const items = await getAllHeldItems();
   const natures = await getAllNatures();
+  const types = await getAllTypes();
 
   const input = {
     pokemon,
     moves: moves,
     trainers,
-    abilities: sortByName(abilities) as Abilities,
+    abilities: abilities,
     items: sortByName(items) as HeldItem[],
     natures: sortByName(natures) as Nature[],
+    types: types,
   };
 
   return (

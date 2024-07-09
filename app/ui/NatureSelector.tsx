@@ -27,7 +27,6 @@ export default function NatureSelector({
     // Set Initial Pokemon
     const totalPages = Math.ceil(filteredNatures.length / naturesPerPage);
     setTotalPages(totalPages);
-    console.log(totalPages);
     setPageNatures(
       filteredNatures.slice((currentPage - 1) * naturesPerPage, currentPage * naturesPerPage)
     );

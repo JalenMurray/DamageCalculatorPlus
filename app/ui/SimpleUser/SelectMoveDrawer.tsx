@@ -1,11 +1,12 @@
 import { CalculatorContext } from '@/app/context/calculator';
-import { Move } from '@/app/pokemon-data/definitions';
-import { formatDashName } from '@/app/utils/utils';
+import { Move, typeColors } from '@/app/pokemon-data/definitions';
+import { formatDashName, getDamageClassURL, getTypeGradient, getTypeURL } from '@/app/utils/utils';
+import Image from 'next/image';
 import { useContext, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 export default function SelectMoveDrawer() {
-  const { allMoves } = useContext(CalculatorContext);
+  const { allMoves, userPokemon, setUserPokemon } = useContext(CalculatorContext);
 
   if (!allMoves) {
     return <div className="skeleton h-full w-full" />;
@@ -49,6 +50,16 @@ export default function SelectMoveDrawer() {
       filter('');
       addMove(filteredMoves[0]);
     }
+  }
+
+  function completeAddMoves() {
+    if (userPokemon.moves.length + toAddMoves.length > 10) {
+      return;
+    }
+    const drawerToggle = document.getElementById('new-move-select') as HTMLInputElement;
+    drawerToggle.checked = !drawerToggle.checked;
+    setToAddMoves([]);
+    setUserPokemon({ ...userPokemon, moves: [...userPokemon.moves, ...toAddMoves] });
   }
 
   return (
@@ -104,10 +115,50 @@ export default function SelectMoveDrawer() {
         <div className="flex flex-col gap-4 mt-4">
           <h1 className="text-xl">Selected Moves:</h1>
           {toAddMoves.map((move) => {
-            return <div>{move.name}</div>;
+            return (
+              <div
+                className=" card w-full h-[100px] cursor-pointer"
+                style={{
+                  backgroundColor: `${typeColors[move.type]}`,
+                }}
+                onClick={() => removeMove(move)}
+              >
+                <div className="card w-auto h-full m-2 bg-neutral text-neutral-content p-4">
+                  <div className="grid grid-cols-2">
+                    <div className="flex flex-col">
+                      <div className="flex gap-4 items-center">
+                        <h1 className="text-xl">{formatDashName(move.name)}</h1>
+                        <div>
+                          <Image
+                            src={getTypeURL(move.type)}
+                            alt={`${move.type} type`}
+                            width={50}
+                            height={20}
+                            key={move.type}
+                          />
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Image
+                          src={getDamageClassURL(move)}
+                          alt={move.damageClass}
+                          width={50}
+                          height={25}
+                        />
+                        <p>Power: {move.power || '--'}</p>
+                        <p>Accuracy: {move.accuracy || '--'}</p>
+                        {move.priority !== 0 && <p>Priority: {move.priority}</p>}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
           })}
         </div>
-        <button className="btn btn-success mt-12">Add Moves</button>
+        <button className="btn btn-success mt-12" onClick={completeAddMoves}>
+          Add Moves
+        </button>
       </div>
     </div>
   );

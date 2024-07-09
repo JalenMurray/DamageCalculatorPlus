@@ -66,7 +66,10 @@ export default function EvIvSelector({
           </div>
           <div className="grid grid-cols-2 gap-4 p-2">
             {['HP', 'Att', 'Def', 'Sp. Att', 'Sp. Def', 'Speed'].map((stat, i) => (
-              <label className="input border-primary-content flex bg-primary text-primary-content justify-center items-center">
+              <label
+                className="input border-primary-content flex bg-primary text-primary-content justify-center items-center"
+                key={i}
+              >
                 <p className="flex-1">{stat}</p>
                 <input
                   className="flex-none w-10"
@@ -95,7 +98,10 @@ export default function EvIvSelector({
           </div>
           <div className="grid grid-cols-2 gap-4 p-2">
             {['HP', 'Att', 'Def', 'Sp. Att', 'Sp. Def', 'Speed'].map((stat, i) => (
-              <label className="input border-accent-content flex bg-accent text-accent-content justify-center items-center">
+              <label
+                className="input border-accent-content flex bg-accent text-accent-content justify-center items-center"
+                key={i}
+              >
                 <p className="flex-1">{stat}</p>
                 <input
                   className="flex-none w-12"

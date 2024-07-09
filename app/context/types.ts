@@ -6,6 +6,7 @@ import {
   Pokemon,
   Move,
   Abilities,
+  Type,
 } from '../pokemon-data/definitions';
 import { DamageInfoOutput, Stats } from '../utils/definitions';
 
@@ -14,8 +15,8 @@ export type MoveOutput = DamageInfoOutput & {
 };
 
 export interface MinPokemonInfo {
-  ability: Ability;
-  nature: Nature;
+  ability: string;
+  nature?: Nature;
   heldItem?: HeldItem;
   pokemon?: Pokemon;
   stats?: Stats;
@@ -24,6 +25,7 @@ export interface MinPokemonInfo {
   ivs?: number[];
   moves: Move[];
   status?: 'burn' | 'paralyze';
+  types: Type[];
 }
 
 export type CalculatorContextType = {
@@ -32,9 +34,10 @@ export type CalculatorContextType = {
   allAbilities: Abilities | null;
   allHeldItems: HeldItem[] | null;
   allNatures: Nature[] | null;
-  userPokemon: MinPokemonInfo | null;
+  allTypes: Type[] | null;
+  userPokemon: MinPokemonInfo;
   userMoveOutputs: MoveOutput[];
-  enemyPokemon: MinPokemonInfo | null;
+  enemyPokemon: MinPokemonInfo;
   enemyMoveOutputs: MoveOutput[];
   conditions?: null;
   setUserPokemon: (newPokemon: MinPokemonInfo) => void;
@@ -44,4 +47,5 @@ export type CalculatorContextType = {
   setAllAbilities: (abilityList: Abilities) => void;
   setAllHeldItems: (itemList: HeldItem[]) => void;
   setAllNatures: (natureList: Nature[]) => void;
+  setAllTypes: (typeList: Type[]) => void;
 };

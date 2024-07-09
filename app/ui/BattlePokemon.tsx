@@ -168,8 +168,6 @@ export default function BattlePokemon({
     return <BattlePokemonSkeleton />;
   }
 
-  console.log(pokemon);
-
   return (
     <div
       className="card w-[800px] h-[900px] flex flex-col"

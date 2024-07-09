@@ -1,4 +1,5 @@
-import { Pokemon, Type, PokemonType, BattlePokemon } from '../pokemon-data/definitions';
+import { MinPokemonInfo } from '../context/types';
+import { Pokemon, Type, PokemonType, BattlePokemon, Move } from '../pokemon-data/definitions';
 import { getStat } from './formulas';
 
 export function capitalize(str: string): string {
@@ -6,7 +7,7 @@ export function capitalize(str: string): string {
 }
 
 export function getTypeStrs(types: Type[]): PokemonType[] {
-  return types.map((type) => type.name);
+  return types.map((type) => type.name.toLowerCase() as PokemonType);
 }
 
 export function removeDash(name: string) {
@@ -128,4 +129,19 @@ interface ObjWithName {
 
 export function sortByName(arr: ObjWithName[]) {
   return arr.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+export function BPToMinPokemonInfo(pokemon: BattlePokemon): MinPokemonInfo {
+  return { ...pokemon, types: pokemon.pokemon.types };
+}
+
+export function getDamageClassURL(move: Move): string {
+  switch (move.damageClass) {
+    case 'physical':
+      return 'https://play.pokemonshowdown.com/sprites/categories/Physical.png';
+    case 'special':
+      return 'https://play.pokemonshowdown.com/sprites/categories/Special.png';
+    case 'status':
+      return 'https://play.pokemonshowdown.com/sprites/categories/Status.png';
+  }
 }

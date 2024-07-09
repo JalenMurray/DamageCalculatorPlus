@@ -29,7 +29,6 @@ export default function PokemonSelector({
     // Set Initial Pokemon
     const totalPages = Math.ceil(filteredPokemon.length / pokemonPerPage);
     setTotalPages(totalPages);
-    console.log(totalPages);
     setPagePokemon(
       filteredPokemon.slice((currentPage - 1) * pokemonPerPage, currentPage * pokemonPerPage)
     );

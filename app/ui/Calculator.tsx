@@ -1,7 +1,15 @@
 'use client';
 
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { Abilities, HeldItem, Move, Nature, Pokemon, Trainer } from '../pokemon-data/definitions';
+import {
+  Abilities,
+  HeldItem,
+  Move,
+  Nature,
+  Pokemon,
+  Trainer,
+  Type,
+} from '../pokemon-data/definitions';
 import Enemy from './Enemy';
 import { getDamageRange, getStat } from '../utils/formulas';
 import { AttackerInput, DefenderInput } from '../utils/definitions';
@@ -23,18 +31,26 @@ export default function Calculator({
     abilities: Abilities;
     items: HeldItem[];
     natures: Nature[];
+    types: Type[];
   };
 }) {
-  const { setAllPokemon, setAllAbilities, setAllMoves, setAllNatures, setAllHeldItems } =
-    useContext(CalculatorContext);
+  const {
+    setAllPokemon,
+    setAllAbilities,
+    setAllMoves,
+    setAllNatures,
+    setAllHeldItems,
+    setAllTypes,
+  } = useContext(CalculatorContext);
 
   useEffect(() => {
-    const { pokemon, moves, abilities, items, natures } = input;
+    const { pokemon, moves, abilities, items, natures, types } = input;
     setAllPokemon(pokemon);
     setAllAbilities(abilities);
     setAllMoves(moves);
     setAllHeldItems(items);
     setAllNatures(natures);
+    setAllTypes(types);
   }, [input]);
 
   return (
@@ -54,7 +70,7 @@ export default function Calculator({
         </div>
         {/* Them */}
         <div className="min-w-[320px] w-full h-full col-span-5">
-          <EnemyTrainer trainer={input.trainers[4]} />
+          <EnemyTrainer trainer={input.trainers[9]} />
           {/* <Enemy pokemon={pokemon[2]} /> */}
         </div>
       </div>

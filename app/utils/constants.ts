@@ -1,5 +1,13 @@
+import { Nature } from '../pokemon-data/definitions';
+
 export const MIN_RANDOM = 85 / 100;
 export const MAX_RANDOM = 1;
+export const DEFAULT_NATURE: Nature = {
+  id: 1,
+  name: 'hardy',
+  increases: null,
+  decreases: null,
+};
 export const DEFAULT_IVS = [31, 31, 31, 31, 31, 31];
 export const DEFAULT_EVS = [0, 0, 0, 0, 0, 0];
 export const WEATHER_ABILITIES = ['cloud-nine', 'air-lock'];

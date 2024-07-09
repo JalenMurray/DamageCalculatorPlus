@@ -1,33 +1,52 @@
+import { CalculatorContext } from '@/app/context/calculator';
 import { HeldItem } from '@/app/pokemon-data/definitions';
 import { formatDashName } from '@/app/utils/utils';
 import clsx from 'clsx';
-import { useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
-export default function HeldItemInput({
-  selected,
-  items,
-  onSelect,
-}: {
-  selected?: HeldItem;
-  items: HeldItem[];
-  onSelect: (newHeldItem: HeldItem) => void;
-}) {
-  const [filteredHeldItems, setFilteredHeldItems] = useState<HeldItem[]>(items);
+export default function HeldItemInput() {
+  const { userPokemon, setUserPokemon, allHeldItems } = useContext(CalculatorContext);
+  const [filteredHeldItems, setFilteredHeldItems] = useState<HeldItem[]>([]);
   const [search, setSearch] = useState<string>('');
   const searchRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (allHeldItems) {
+      setFilteredHeldItems(allHeldItems);
+    }
+  }, [allHeldItems]);
+
+  function setHeldItem(item: HeldItem) {
+    setUserPokemon({ ...userPokemon, heldItem: item });
+  }
+
+  function removeHeldItem() {
+    setUserPokemon({ ...userPokemon, heldItem: undefined });
+  }
+
+  function handleSelect(item: HeldItem) {
+    if (userPokemon.heldItem && item.id === userPokemon.heldItem.id) {
+      removeHeldItem();
+    } else {
+      setHeldItem(item);
+    }
+  }
+
   const filter = useDebouncedCallback((text: string) => {
+    if (!allHeldItems) {
+      return;
+    }
     const filtered =
       text !== ''
-        ? items.filter((heldItem) => {
+        ? allHeldItems.filter((heldItem) => {
             let result = false;
             if (heldItem.name.includes(text)) {
               result = true;
             }
             return result;
           })
-        : items;
+        : allHeldItems;
     const toDisplay = filtered.length > 20 ? filtered.slice(0, 20) : filtered;
     setFilteredHeldItems(toDisplay);
   }, 200);
@@ -35,19 +54,16 @@ export default function HeldItemInput({
   function handleKeyDown(e: any) {
     const { key } = e;
     if (key === 'Enter' && filteredHeldItems[0]) {
-      onSelect(filteredHeldItems[0]);
-      if (searchRef.current) {
-        searchRef.current.blur();
-      }
+      handleSelect(filteredHeldItems[0]);
     }
   }
 
   return (
     <div className="flex flex-col gap-4 my-4">
-      {selected ? (
-        <h1>Selected Ability: {formatDashName(selected.name)}</h1>
+      {userPokemon.heldItem ? (
+        <h1>Selected Item: {formatDashName(userPokemon.heldItem.name)}</h1>
       ) : (
-        <h1>Select Ability</h1>
+        <h1>Select Item</h1>
       )}
       <div className="card bg-base-300 p-2 text-base-content">
         <label className="input input-bordered flex items-center gap-2">
@@ -59,10 +75,6 @@ export default function HeldItemInput({
             onChange={(e) => {
               setSearch(e.target.value);
               filter(e.target.value.toLowerCase().replace(' ', '-'));
-            }}
-            onBlur={() => {
-              setSearch('');
-              filter('');
             }}
             onKeyDown={handleKeyDown}
             ref={searchRef}
@@ -81,19 +93,25 @@ export default function HeldItemInput({
           </svg>
         </label>
         <ul className="h-48 overflow-auto mt-1">
-          {filteredHeldItems.length > 0 &&
+          {allHeldItems ? (
+            filteredHeldItems.length > 0 &&
             filteredHeldItems.map((heldItem) => (
               <li
                 key={heldItem.id}
                 className={clsx('p-2 cursor-pointer border-black border-2', {
-                  'bg-base-100': selected && selected.id === heldItem.id,
-                  'hover:bg-base-100': !selected || selected.id !== heldItem.id,
+                  'bg-base-100 hover:bg-red-400 hover:text-black':
+                    userPokemon.heldItem && userPokemon.heldItem.id === heldItem.id,
+                  'hover:bg-base-100':
+                    !userPokemon.heldItem || userPokemon.heldItem.id !== heldItem.id,
                 })}
-                onClick={() => onSelect(heldItem)}
+                onClick={() => handleSelect(heldItem)}
               >
                 {formatDashName(heldItem.name)}
               </li>
-            ))}
+            ))
+          ) : (
+            <div className="skeleton h-48 w-full" />
+          )}
         </ul>
       </div>
     </div>

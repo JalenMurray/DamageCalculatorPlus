@@ -10,6 +10,7 @@ import {
   Nature,
   Abilities,
   TrainerFormData,
+  Type,
 } from './definitions';
 import { db } from './pokemon-data';
 import { battlePokemon, battlePokemonMoves, trainers } from './schema';
@@ -165,29 +166,34 @@ export async function createTrainer(input: TrainerFormData) {
     pokemonGame: game.id,
   };
   const newTrainer = await db.insert(trainers).values(trainerInfo).returning();
-  const { id } = newTrainer[0];
-  const pokemonInfo = pokemon.map((p) => ({
-    pokemon: p.pokemon.id,
-    level: p.level,
-    evs: p.evs,
-    ivs: p.ivs,
-    ability: p.ability.id,
-    nature: p.nature.id,
-    trainer: id,
-    held_item: p.heldItem?.id || null,
-  }));
-  const newPokemon = await db.insert(battlePokemon).values(pokemonInfo).returning();
-  const moveInfo = newPokemon.map(({ id }, i) => {
-    const pokemonMoves = moves[i];
-    const toAdd = pokemonMoves.moves.map((move) => ({
-      pokemon: id,
-      move: move.id,
-    }));
-    return toAdd;
-  });
-  const addMoves = moveInfo.map(async (movesInfo) => {
-    await db.insert(battlePokemonMoves).values(movesInfo);
-  });
+  // const { id } = newTrainer[0];
+  // const pokemonInfo = pokemon.map((p) => ({
+  //   pokemon: p.pokemon.id,
+  //   level: p.level,
+  //   evs: p.evs,
+  //   ivs: p.ivs,
+  //   ability: p.ability.id,
+  //   nature: p.nature.id,
+  //   trainer: id,
+  //   held_item: p.heldItem?.id || null,
+  // }));
+  // const newPokemon = await db.insert(battlePokemon).values(pokemonInfo).returning();
+  // const moveInfo = newPokemon.map(({ id }, i) => {
+  //   const pokemonMoves = moves[i];
+  //   const toAdd = pokemonMoves.moves.map((move) => ({
+  //     pokemon: id,
+  //     move: move.id,
+  //   }));
+  //   return toAdd;
+  // });
+  // const addMoves = moveInfo.map(async (movesInfo) => {
+  //   await db.insert(battlePokemonMoves).values(movesInfo);
+  // });
 
-  await Promise.all(addMoves);
+  // await Promise.all(addMoves);
+}
+
+export async function getAllTypes(): Promise<Type[]> {
+  const result = await db.query.types.findMany();
+  return result;
 }

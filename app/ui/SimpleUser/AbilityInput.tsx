@@ -1,41 +1,48 @@
+import { CalculatorContext } from '@/app/context/calculator';
 import { Abilities, Ability } from '@/app/pokemon-data/definitions';
-import { formatDashName } from '@/app/utils/utils';
+import { formatDashName, sortByName } from '@/app/utils/utils';
 import clsx from 'clsx';
-import { useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
-export default function AbilityInput({
-  selected,
-  abilities,
-  onSelect,
-}: {
-  selected?: Ability;
-  abilities: Abilities;
-  onSelect: (newAbility: Ability) => void;
-}) {
-  const [filteredAbilities, setFilteredAbilities] = useState<Abilities>(abilities);
+export default function AbilityInput() {
+  const { userPokemon, setUserPokemon, allAbilities } = useContext(CalculatorContext);
+  const [filteredAbilities, setFilteredAbilities] = useState<Abilities>([]);
   const [search, setSearch] = useState<string>('');
   const searchRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (allAbilities) {
+      setFilteredAbilities(sortByName(allAbilities) as Abilities);
+    }
+  }, [allAbilities]);
+
   const filter = useDebouncedCallback((text: string) => {
+    if (!allAbilities) {
+      return;
+    }
     const filtered =
       text !== ''
-        ? abilities.filter((ability) => {
+        ? allAbilities.filter((ability) => {
             let result = false;
             if (ability.name.includes(text)) {
               result = true;
             }
             return result;
           })
-        : abilities;
+        : allAbilities;
     const toDisplay = filtered.length > 20 ? filtered.slice(0, 20) : filtered;
-    setFilteredAbilities(toDisplay);
+    setFilteredAbilities(sortByName(toDisplay) as Abilities);
   }, 200);
+
+  function setAbility(ability: Ability) {
+    setUserPokemon({ ...userPokemon, ability: ability.name });
+  }
 
   function handleKeyDown(e: any) {
     const { key } = e;
     if (key === 'Enter' && filteredAbilities[0]) {
-      onSelect(filteredAbilities[0]);
+      setAbility(filteredAbilities[0]);
       if (searchRef.current) {
         searchRef.current.blur();
       }
@@ -44,8 +51,8 @@ export default function AbilityInput({
 
   return (
     <div className="flex flex-col gap-4 my-4">
-      {selected ? (
-        <h1>Selected Ability: {formatDashName(selected.name)}</h1>
+      {userPokemon.ability ? (
+        <h1>Selected Ability: {formatDashName(userPokemon.ability)}</h1>
       ) : (
         <h1>Select Ability</h1>
       )}
@@ -86,10 +93,10 @@ export default function AbilityInput({
               <li
                 key={ability.id}
                 className={clsx('p-2 cursor-pointer border-black border-2', {
-                  'bg-base-100': selected && selected.id === ability.id,
-                  'hover:bg-base-100': !selected || selected.id !== ability.id,
+                  'bg-base-100': userPokemon.ability === ability.name,
+                  'hover:bg-base-100': !userPokemon.ability || userPokemon.ability !== ability.name,
                 })}
-                onClick={() => onSelect(ability)}
+                onClick={() => setAbility(ability)}
               >
                 {formatDashName(ability.name)}
               </li>

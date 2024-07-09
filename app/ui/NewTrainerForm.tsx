@@ -45,7 +45,7 @@ export default function NewTrainerForm({
     sprite: trainerSprites[0],
     pokemon: [],
     moves: [],
-    game: games[0],
+    game: games[16],
     cardColor: '#FF0000',
   });
 
@@ -73,8 +73,6 @@ export default function NewTrainerForm({
     const newPokemonList = [...formData.pokemon, pokemon];
     const newMovesList = [...formData.moves, { moves, pokemon: pokemon.pokemon }];
     setFormData((prev) => ({ ...prev, pokemon: newPokemonList, moves: newMovesList }));
-    console.log('Adding New Pokemon', pokemon);
-    console.log('With Moves', moves);
   }
 
   async function handleCreateTrainer() {
@@ -84,7 +82,7 @@ export default function NewTrainerForm({
       sprite: trainerSprites[0],
       pokemon: [],
       moves: [],
-      game: games[0],
+      game: games[16],
       cardColor: '#FF0000',
     });
   }

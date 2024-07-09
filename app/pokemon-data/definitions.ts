@@ -37,7 +37,8 @@ export type Ability = {
 export type Abilities = Ability[];
 
 export type Type = {
-  name: PokemonType;
+  id: number;
+  name: string;
   color: string;
 };
 

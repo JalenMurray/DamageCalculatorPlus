@@ -10,6 +10,7 @@ import MoveInput from './MoveInput';
 import SideDrawer from '../SideDrawer';
 import SelectMoveDrawer from './SelectMoveDrawer';
 import TypeInput from './TypeInput';
+import LevelInput from './LevelInput';
 
 export default function SimpleUser({
   abilities,
@@ -23,7 +24,7 @@ export default function SimpleUser({
   natures: Nature[];
 }) {
   const [stats, setStats] = useState<number[]>([100, 100, 100, 100, 100, 100]);
-  const [ability, setAbility] = useState<Ability>(abilities[0]);
+  const [ability, setAbility] = useState<Ability>(abilities[65]);
   const [nature, setNature] = useState<Nature>(natures[0]);
   const [heldItem, setHeldItem] = useState<HeldItem | undefined>();
 
@@ -33,35 +34,24 @@ export default function SimpleUser({
 
   return (
     <>
-      <div className="card bg-neutral text-neutral-content h-[1080px] p-8 gap-8">
+      <div className="card bg-neutral text-neutral-content min-h-[1080px] p-8 gap-4">
         <div className="flex flex-col">
           <h1 className="text-5xl">Simple Pokemon Editor</h1>
           <p className="mt-2 text-sm">
             Only input the necessary information to use the calculator quickly. Useful if you want a
             more accurate calculation without finding EVS and IVS
           </p>
+          <p className="text-sm">The default information below is for a level 100 Infernape</p>
           <hr />
         </div>
-        <TypeInput />
+        <LevelInput />
         <StatsInput stats={stats} onChange={handleStatChange} />
+        <TypeInput />
         <div className="grid grid-cols-2 gap-4">
-          <AbilityInput
-            abilities={abilities}
-            selected={ability}
-            onSelect={(newAbility) => setAbility(newAbility)}
-          />
-          {/* <NatureInput
-          natures={natures}
-          selected={nature}
-          onSelect={(newNature) => setNature(newNature)}
-        /> */}
-          <HeldItemInput
-            items={items}
-            selected={heldItem}
-            onSelect={(newHeldItem) => setHeldItem(newHeldItem)}
-          />
+          <AbilityInput />
+          <HeldItemInput />
         </div>
-        <MoveInput moves={moves} />
+        <MoveInput />
       </div>
     </>
   );

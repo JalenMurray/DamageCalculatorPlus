@@ -39,6 +39,7 @@ function getParenthesisFormula(input: DamageInfoInput): number {
   }
 
   const a = Math.floor((2 * level) / 5) + 2;
+  console.log('MOVE + A', move.name, a);
   const b = a * power;
   const c = b * attack;
   const d = Math.floor(c / defense);
@@ -99,11 +100,8 @@ function getStabNumber(input: DamageInfoInput): number {
 
   const pokemonTypeStrings = getTypeStrs(pokemonTypes);
 
-  if (ability === 'adaptability') {
-    return 2;
-  }
   if (pokemonTypeStrings.includes(moveType)) {
-    return 1.5;
+    return ability === 'adaptability' ? 2 : 1.5;
   }
   return 1;
 }
@@ -146,6 +144,7 @@ export function getDamageRange(input: DamageInfoInput): DamageInfoOutput {
   // console.log(`Processing Attack From`, input.attacker);
   // console.log(`To:`, input.defender);
   // console.log(`Using Move ${input.attacker.move.name}`);
+  // console.log(weather, crit, stab, type, burn);
 
   const maxDmg = Math.floor(baseDmg * MAX_RANDOM);
   const minDmg = Math.floor(baseDmg * MIN_RANDOM);

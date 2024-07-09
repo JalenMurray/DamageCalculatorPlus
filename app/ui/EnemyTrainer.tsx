@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { BattlePokemon as BPType, Trainer } from '../pokemon-data/definitions';
-import { getSpriteURL } from '../utils/utils';
+import { BPToMinPokemonInfo, getSpriteURL } from '../utils/utils';
 import { useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import BattlePokemon from './BattlePokemon';
@@ -69,14 +69,16 @@ function TrainerPokemonSelector({
 
 export default function EnemyTrainer({ trainer }: { trainer: Trainer }) {
   const { enemyPokemon, setEnemyPokemon } = useContext(CalculatorContext);
+  const [selectedPokemon, setSelectedPokemon] = useState<BPType>(trainer.pokemon[0]);
 
   useEffect(() => {
-    setEnemyPokemon(trainer.pokemon[0]);
+    setEnemyPokemon(BPToMinPokemonInfo(trainer.pokemon[0]));
   }, [trainer]);
 
   function handlePokemonSelected(index: number) {
     const pokemon = trainer.pokemon[index];
-    setEnemyPokemon(pokemon);
+    setSelectedPokemon(pokemon);
+    setEnemyPokemon(BPToMinPokemonInfo(pokemon));
   }
 
   return (
@@ -87,7 +89,7 @@ export default function EnemyTrainer({ trainer }: { trainer: Trainer }) {
       <TrainerHeader trainer={trainer} />
       <div className="grid grid-cols-5 h-[900px]">
         <div className="col-span-4 flex justify-center items-center p-12">
-          <BattlePokemon pokemon={enemyPokemon} />
+          <BattlePokemon pokemon={selectedPokemon} />
         </div>
         <TrainerPokemonSelector
           trainer={trainer}

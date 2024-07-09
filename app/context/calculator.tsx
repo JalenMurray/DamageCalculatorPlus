@@ -9,6 +9,7 @@ import {
   Move,
   Nature,
   Pokemon,
+  Type,
 } from '../pokemon-data/definitions';
 import {
   AttackerInput,
@@ -18,8 +19,30 @@ import {
   Stats,
 } from '../utils/definitions';
 import { getBattlePokemonStats } from '../utils/utils';
-import { DEFAULT_EVS, DEFAULT_IVS } from '../utils/constants';
+import { DEFAULT_NATURE } from '../utils/constants';
 import { getDamageRange, getStat } from '../utils/formulas';
+
+const DEFAULT_POKEMON: MinPokemonInfo = {
+  ability: 'blaze',
+  stats: {
+    hp: 293,
+    attack: 244,
+    defense: 178,
+    specialAttack: 244,
+    specialDefense: 179,
+    speed: 252,
+  },
+  level: 100,
+  moves: [],
+  types: [
+    {
+      id: 2,
+      name: 'Fire',
+      color: '#FF4422',
+    },
+    { id: 7, name: 'Fighting', color: '#AE4F3F' },
+  ],
+};
 
 export const CalculatorContext = createContext<CalculatorContextType>({
   allPokemon: null,
@@ -27,9 +50,10 @@ export const CalculatorContext = createContext<CalculatorContextType>({
   allHeldItems: null,
   allMoves: null,
   allNatures: null,
-  userPokemon: null,
+  allTypes: null,
+  userPokemon: DEFAULT_POKEMON,
   userMoveOutputs: [],
-  enemyPokemon: null,
+  enemyPokemon: DEFAULT_POKEMON,
   enemyMoveOutputs: [],
   conditions: null,
   setUserPokemon: (newPokemon: MinPokemonInfo) => null,
@@ -39,11 +63,12 @@ export const CalculatorContext = createContext<CalculatorContextType>({
   setAllHeldItems: (itemList: HeldItem[]) => null,
   setAllMoves: (moveList: Move[]) => null,
   setAllNatures: (natureList: Nature[]) => null,
+  setAllTypes: (typeList: Type[]) => null,
 });
 
 export function CalculatorProvider({ children }: { children: React.ReactNode }) {
-  const [userPokemon, setUserPokemon] = useState<MinPokemonInfo | null>(null);
-  const [enemyPokemon, setEnemyPokemon] = useState<MinPokemonInfo | null>(null);
+  const [userPokemon, setUserPokemon] = useState<MinPokemonInfo>(DEFAULT_POKEMON);
+  const [enemyPokemon, setEnemyPokemon] = useState<MinPokemonInfo>(DEFAULT_POKEMON);
   const [userMoveOutputs, setUserMoveOutputs] = useState<MoveOutput[]>([]);
   const [enemyMoveOutputs, setEnemyMoveOutputs] = useState<MoveOutput[]>([]);
   const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
@@ -51,6 +76,7 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
   const [allHeldItems, setAllHeldItems] = useState<HeldItem[]>([]);
   const [allMoves, setAllMoves] = useState<Move[]>([]);
   const [allNatures, setAllNatures] = useState<Nature[]>([]);
+  const [allTypes, setAllTypes] = useState<Type[]>([]);
 
   useEffect(() => {
     if (!userPokemon || !enemyPokemon) {
@@ -80,7 +106,7 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
 
   function getAttacker(move: Move, pokemon: MinPokemonInfo): AttackerInput {
     let attack: number;
-    if (pokemon.pokemon) {
+    if (pokemon.pokemon && pokemon.nature) {
       switch (move.damageClass) {
         case 'physical':
           attack = getStat(
@@ -114,15 +140,15 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
       level: pokemon.level,
       move: move,
       attack,
-      ability: pokemon.ability.name,
-      types: [],
+      ability: pokemon.ability,
+      types: pokemon.types,
     };
   }
 
   function getDefender(move: Move, pokemon: MinPokemonInfo): DefenderInput {
     let defense: number;
     let hp: number;
-    if (pokemon.pokemon) {
+    if (pokemon.pokemon && pokemon.nature) {
       hp = getStat(
         true,
         pokemon.level,
@@ -164,8 +190,8 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
     return {
       hp,
       defense,
-      ability: pokemon.ability.name,
-      types: [],
+      ability: pokemon.ability,
+      types: pokemon.types,
     };
   }
 
@@ -181,11 +207,13 @@ export function CalculatorProvider({ children }: { children: React.ReactNode }) 
     allHeldItems,
     allMoves,
     allNatures,
+    allTypes,
     setAllPokemon,
     setAllAbilities,
     setAllHeldItems,
     setAllMoves,
     setAllNatures,
+    setAllTypes,
   };
   return <CalculatorContext.Provider value={value}>{children}</CalculatorContext.Provider>;
 }
