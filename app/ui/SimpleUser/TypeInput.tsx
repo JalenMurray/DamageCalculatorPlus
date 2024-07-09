@@ -42,7 +42,7 @@ export default function TypeInput() {
       {allTypes ? (
         <div className="grid grid-cols-6 gap-2">
           {allTypes.map((type) => (
-            <div className="indicator w-full">
+            <div className="indicator w-full" key={type.id}>
               {hasType(type) && <div className="indicator-item badge badge-primary" />}
               <div
                 className="card border-base-300 w-full h-[50px] p-4 text-white justify-center items-center text-center cursor-pointer"

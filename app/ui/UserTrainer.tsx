@@ -7,6 +7,7 @@ import { useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import BattlePokemon from './BattlePokemon';
 import { CalculatorContext } from '../context/calculator';
+import { MinPokemonInfo } from '../context/types';
 
 function TrainerHeader({ trainer }: { trainer: Trainer }) {
   return (
@@ -68,12 +69,12 @@ export default function UserTrainer({ trainer }: { trainer: Trainer }) {
   const { userPokemon, setUserPokemon } = useContext(CalculatorContext);
 
   useEffect(() => {
-    setUserPokemon(trainer.pokemon[0]);
-  }, [trainer]);
+    setUserPokemon(trainer.pokemon[0] as MinPokemonInfo);
+  }, [trainer, setUserPokemon]);
 
   function handlePokemonSelected(index: number) {
     const pokemon = trainer.pokemon[index];
-    setUserPokemon(pokemon);
+    setUserPokemon(pokemon as MinPokemonInfo);
   }
 
   return (
@@ -85,7 +86,7 @@ export default function UserTrainer({ trainer }: { trainer: Trainer }) {
           onSelect={(i: number) => handlePokemonSelected(i)}
         />
         <div className="col-span-4 flex justify-center items-center p-12">
-          <BattlePokemon pokemon={userPokemon} user />
+          <BattlePokemon pokemon={userPokemon as BPType} user />
         </div>
       </div>
     </div>

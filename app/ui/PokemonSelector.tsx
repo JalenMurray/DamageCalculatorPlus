@@ -170,6 +170,7 @@ export default function PokemonSelector({
                 }
               )}
               onClick={() => handleClick(pokemon)}
+              key={pokemon.id}
             >
               <Image
                 src={`${baseSpriteURL}${pokemon.id}.png`}

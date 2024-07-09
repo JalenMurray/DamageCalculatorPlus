@@ -51,7 +51,15 @@ export default function Calculator({
     setAllHeldItems(items);
     setAllNatures(natures);
     setAllTypes(types);
-  }, [input]);
+  }, [
+    input,
+    setAllPokemon,
+    setAllAbilities,
+    setAllMoves,
+    setAllHeldItems,
+    setAllNatures,
+    setAllTypes,
+  ]);
 
   return (
     <>

@@ -58,7 +58,10 @@ export default function StatsInput({
           ['Sp. Def', specialDefense],
           ['Speed', speed],
         ].map((stat, i) => (
-          <label className="input border-primary-content flex bg-primary text-primary-content justify-center items-center">
+          <label
+            className="input border-primary-content flex bg-primary text-primary-content justify-center items-center"
+            key={i}
+          >
             <p className="flex-1">{stat[0]}</p>
             <input
               className="flex-none w-32"

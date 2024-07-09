@@ -148,7 +148,11 @@ export default function NewTrainerForm({
           <div className="grid grid-cols-3 gap-4 mb-12">
             {formData.pokemon &&
               formData.pokemon.map((pokemon, i) => (
-                <NewBattlePokemonDisplay pokemon={pokemon} moves={formData.moves[i]} />
+                <NewBattlePokemonDisplay
+                  pokemon={pokemon}
+                  moves={formData.moves[i]}
+                  key={pokemon.pokemon.id}
+                />
               ))}
           </div>
         </div>

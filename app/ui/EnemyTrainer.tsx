@@ -73,7 +73,7 @@ export default function EnemyTrainer({ trainer }: { trainer: Trainer }) {
 
   useEffect(() => {
     setEnemyPokemon(BPToMinPokemonInfo(trainer.pokemon[0]));
-  }, [trainer]);
+  }, [trainer, setEnemyPokemon]);
 
   function handlePokemonSelected(index: number) {
     const pokemon = trainer.pokemon[index];

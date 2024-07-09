@@ -58,7 +58,7 @@ function PokemonInfo({ pokemon }: { pokemon: PokemonFormData }) {
           const iv = pokemon.ivs[i];
           const statName = getStatByIndex(i);
           return (
-            <label className="input flex justify-center items-center">
+            <label className="input flex justify-center items-center" key={i}>
               <p className="flex-1">{statName}</p>
               <p className="flex-none">
                 {ev}/{iv}
@@ -75,7 +75,10 @@ function Moves({ moves }: { moves: BattlePokemonMoveFormData }) {
   return (
     <div className="grid grid-cols-2 gap-4 p-4 text-base-content">
       {moves.moves.map((move) => (
-        <div className="card h-[100px] bg-base-100 text-center justify-center items-center">
+        <div
+          className="card h-[100px] bg-base-100 text-center justify-center items-center"
+          key={move.id}
+        >
           <h1>{formatDashName(move.name)}</h1>
         </div>
       ))}

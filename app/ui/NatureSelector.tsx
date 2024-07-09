@@ -192,6 +192,7 @@ export default function NatureSelector({
                 }
               )}
               onClick={() => onSelect(nature)}
+              key={nature.id}
             >
               <h1>{capitalize(nature.name)}</h1>
               {getNatureEffect(nature)}

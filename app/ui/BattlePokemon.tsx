@@ -116,7 +116,7 @@ function Move({ user, move }: { user: boolean | undefined; move: moveType }) {
       setFloor(output.floor);
       setCeiling(output.ceiling);
     }
-  }, [userMoveOutputs, enemyMoveOutputs]);
+  }, [userMoveOutputs, enemyMoveOutputs, move.id, user]);
 
   return (
     <div

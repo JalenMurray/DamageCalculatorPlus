@@ -30,6 +30,7 @@ export default function MoveInput() {
               backgroundColor: `${typeColors[move.type]}`,
             }}
             onClick={() => removeMove(move)}
+            key={move.id}
           >
             <div className="card w-auto h-full m-2 bg-neutral text-neutral-content p-4">
               <div className="grid grid-cols-2">

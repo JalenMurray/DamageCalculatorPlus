@@ -113,6 +113,7 @@ export default function BattlePokemonMovesSelector({
               <div
                 className="card bg-neutral text-neutral-content h-24 text-center justify-center cursor-pointer"
                 onClick={() => removeMove(move)}
+                key={move.id}
               >
                 {formatDashName(move.name)}
               </div>

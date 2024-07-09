@@ -7,11 +7,6 @@ import { useDebouncedCallback } from 'use-debounce';
 
 export default function SelectMoveDrawer() {
   const { allMoves, userPokemon, setUserPokemon } = useContext(CalculatorContext);
-
-  if (!allMoves) {
-    return <div className="skeleton h-full w-full" />;
-  }
-
   const [filteredMoves, setFilteredMoves] = useState<Move[]>([]);
   const [search, setSearch] = useState<string>('');
   const [toAddMoves, setToAddMoves] = useState<Move[]>([]);
@@ -26,6 +21,9 @@ export default function SelectMoveDrawer() {
   }
 
   const filter = useDebouncedCallback((text: string) => {
+    if (!allMoves) {
+      return;
+    }
     const filtered =
       text !== ''
         ? allMoves.filter((move) => {
@@ -60,6 +58,10 @@ export default function SelectMoveDrawer() {
     drawerToggle.checked = !drawerToggle.checked;
     setToAddMoves([]);
     setUserPokemon({ ...userPokemon, moves: [...userPokemon.moves, ...toAddMoves] });
+  }
+
+  if (!allMoves) {
+    return <div className="skeleton h-full w-full" />;
   }
 
   return (
@@ -122,6 +124,7 @@ export default function SelectMoveDrawer() {
                   backgroundColor: `${typeColors[move.type]}`,
                 }}
                 onClick={() => removeMove(move)}
+                key={move.id}
               >
                 <div className="card w-auto h-full m-2 bg-neutral text-neutral-content p-4">
                   <div className="grid grid-cols-2">
